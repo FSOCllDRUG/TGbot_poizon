@@ -1,4 +1,5 @@
-from pydantic import BaseSettings, SecretStr
+from pydantic import SecretStr
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -9,5 +10,4 @@ class Settings(BaseSettings):
         env_file_encoding = 'utf-8'
 
 
-# s
 config = Settings()
