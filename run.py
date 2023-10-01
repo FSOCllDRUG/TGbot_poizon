@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from app.handlers import router
 from config_reader import config
-
+#Лог в консоль
 logging.basicConfig(level=logging.INFO)
 
 
