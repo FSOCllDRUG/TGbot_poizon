@@ -4,7 +4,7 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
 main_kb = [
     [KeyboardButton(text='Каталог'),
      KeyboardButton(text='Корзина')],
-    [KeyboardButton(text='Мой профиль'),
+    [KeyboardButton(text='Мой ID'),
      KeyboardButton(text='Контакты')]
 ]
 
@@ -19,3 +19,8 @@ catalog = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Adidas', callback_data='adidas')],
     [InlineKeyboardButton(text='Nike', callback_data='nike')]
 ])
+
+secret_143 = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Да', callback_data='secret_143')]
+])
+

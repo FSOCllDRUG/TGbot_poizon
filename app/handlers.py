@@ -8,12 +8,18 @@ router = Router()
 
 class Admin(Filter):
     async def __call__(self, message: Message) -> bool:
-        return message.from_user.id in [6092344340]
+        return message.from_user.id in [6092344340, 1773979594]
+
+
+# class Nastya(Filter):
+#     async def __call__(self, message: Message) -> bool:
+#         return message.from_user.id in [1773979594]
 
 
 @router.message(Admin(), F.text == '/admin')
 async def cmd_admin(message: Message):
     await message.answer('Вы админ.')
+
 
 # Основная команда для запуска бота /start
 @router.message(F.text == '/start')
@@ -22,13 +28,13 @@ async def cmd_start(message: Message):
 
 
 # Выдает пользователю его ID
-@router.message(F.text == '/my_id')
+@router.message(F.text == 'Мой ID')
 async def cmd_my_id(message: Message):
     await message.answer(f'Ваш ID: {message.from_user.id}')
     await message.answer(f'Ваше имя: {message.from_user.first_name}')
-    await message.answer_photo(photo='https://linuxconfig.org/wp-content/uploads/2022/03/06-how-to-configure-static'
-                                     '-ip-address-on-ubuntu-22-04-jammy-jellyfish-desktop-server.png',
-                               caption='Пример отправки фото')
+    # await message.answer_photo(photo='https://linuxconfig.org/wp-content/uploads/2022/03/06-how-to-configure-static'
+    #                                  '-ip-address-on-ubuntu-22-04-jammy-jellyfish-desktop-server.png',
+    # caption='Пример отправки фото')
 
 
 # Пример работы отправки фото ботом
@@ -69,6 +75,22 @@ async def catalog(message: Message):
     await message.answer('Выберите бренд', reply_markup=kb.catalog)
 
 
+@router.message(Admin(), F.text == '/secretik')
+async def cmd_secret143(message: Message):
+    await message.answer('Подскажи, как можно сказать "I love you" так, чтобы при этом не использовать буквы?')
+
+
+@router.message(Admin(), F.text == '143')
+async def cmd_secret143(message: Message):
+    await message.answer('Ты точно Настюша? -_-', reply_markup=kb.secret_143)
+
+
+@router.callback_query(Admin(), F.data == 'secret_143')
+async def cb_secret143(callback: CallbackQuery):
+    await callback.answer('Я тебе поверю на слово...')
+    await callback.message.answer_video(video='BAACAgIAAxkBAAOnZRoDMifIRwkegNXnc8d_V6SG4VMAApsxAAKIJdFIDFaXkHtfsuAwBA')
+
+
 @router.callback_query(F.data == 'adidas')
 async def cb_adidas(callback: CallbackQuery):
     await callback.answer('Вы выбрали бренд')
@@ -81,8 +103,13 @@ async def cb_adidas(callback: CallbackQuery):
     await callback.message.answer(f'Вы выбрали {callback.data}')
 
 
+@router.message(F.video)
+async def cmd_get_video_id(message: Message):
+    await message.answer(message.video.file_id)
+
+
 # Хэндлер без фильтра, отвечает в случае, если сообщение от пользователя не подошло
 # ни под один фильтр
 @router.message()
 async def echo(message: Message):
-    await message.answer('Ты несёшь какую-то хуйню, которую слава богу я не умею понимать.')
+    await message.answer('Ты несёшь какую-то хуйню, которую, слава Деду, я не умею понимать.')
