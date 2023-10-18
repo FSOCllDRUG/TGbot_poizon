@@ -34,11 +34,14 @@ otzivi = InlineKeyboardMarkup(inline_keyboard=[
 #     [InlineKeyboardButton(text='Создать ещё одну заявку', callback_data='send_create')]
 #     [InlineKeyboardButton(text='Выйти в меню', callback_data='cancel')]
 # ])
-
+FinalOrder = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Добавить товар', callback_data='add_to_order')],
+    [InlineKeyboardButton(text='Отправить заявку менеджеру', callback_data='send_to_manager')]
+])
 socials = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Мы в VK', url='https://vk.com/romatruhov')],
-    [InlineKeyboardButton(text='Мы в Instagram', url='https://www.instagram.com/stuffmarketby')],
-    [InlineKeyboardButton(text='Мы в TikTok', url='https://vm.tiktok.com/ZMNyuRqGt')]
+    [InlineKeyboardButton(text='VK', url='https://vk.com/romatruhov')],
+    [InlineKeyboardButton(text='Instagram', url='https://www.instagram.com/stuffmarketby')],
+    [InlineKeyboardButton(text='TikTok', url='https://vm.tiktok.com/ZMNyuRqGt')]
 ])
 
 catalog = InlineKeyboardMarkup(inline_keyboard=[
@@ -66,6 +69,13 @@ order_kb = [
 ]
 order = ReplyKeyboardMarkup(keyboard=order_kb, one_time_keyboard=False, resize_keyboard=True)
 
+faq_kb = [
+    [KeyboardButton(text='Кто мы?'), ],
+    [KeyboardButton(text='Как происходит расчёт?'), KeyboardButton(text='Стоимость и сроки доставки?')],
+    [KeyboardButton(text='Как узнать нужный размер?')],
+    [KeyboardButton(text='Вернуться в меню ⬅️️️')]
+]
+faq = ReplyKeyboardMarkup(keyboard=faq_kb, one_time_keyboard=False, resize_keyboard=True)
 #  1. Poizon
 #  2. Taobao
 #  3. 1688
