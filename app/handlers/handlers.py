@@ -5,8 +5,9 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto  # , FSInputFile
-from app.convert import convert_currency_async as cvrt
-import keyboards as kb
+from app.modules.convert import convert_price as cvrt
+from app.modules.convert import get_data
+from app.keyboards import keyboards as kb
 
 router = Router()
 
@@ -145,30 +146,25 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
     )
 
 
-@router.message(Converting.yuan_amount)
+@router.message(Converting.yuan_amount, F.text.isdigit() == True)
 async def converting(message: Message, state: FSMContext) -> None:
     await state.update_data(yuan_amount=message.text)
-    # x = await state.get_data()
-    while True:
-        try:
-            x = float(message.text)
-            byn_rate = await cvrt(x / 10 * 1.05, 'CNY')
-            usd_byn_rate_avia = await cvrt(10, 'USD')
-            usd_byn_rate_avto = await cvrt(5, 'USD')
-            await message.answer(
-                f"Цена товара= {byn_rate:.2f} BYN\nЦена авто-доставки за 1 кг= {usd_byn_rate_avto:.2f} BYN\nЦена "
-                f"авиа-доставки за 1 кг= {usd_byn_rate_avia:.2f} BYN", reply_markup=kb.inshop)
-            await state.clear()
-            break
-        except ValueError:
-            await message.answer("Возврат в главное меню", reply_markup=kb.main)
-            await state.clear()
-            break
+    x = int(message.text)
+    byn_rate = cvrt(x)
+    data = get_data()
+    avia_price = data['avia']
+    avto_price = data['avto']
+    await message.answer(
+        f"Цена товара= {byn_rate:.2f} BYN\nЦена авто-доставки за 1 кг= {avto_price:.0f} $\nЦена "
+        f"авиа-доставки за 1 кг= {avia_price:.0f} $", reply_markup=kb.inshop)
+    await state.clear()
 
 
 @router.message(Converting.yuan_amount)
-async def process_unknown_write_bots(message: Message) -> None:
-    await message.reply("I don't understand you :(")
+async def incorrect_input_rasschet(message: Message) -> None:
+    await message.reply(
+        text="Требуется ввести цену(численное значение)"
+    )
 
 
 @router.message(F.text == 'Каталог')
@@ -384,12 +380,12 @@ async def Photo(message: Message, state: FSMContext):
     await state.set_state(Order.price)
 
 
-@router.message(Order.price)
+@router.message(Order.price, F.text.isdigit() == True)
 async def Summary(message: Message, state: FSMContext):
     await state.update_data(price=message.text)
     user_data = await state.get_data()
     x = float(user_data["price"])
-    byn_rate = await cvrt(x / 10 * 1.05, 'CNY')
+    byn_rate = cvrt(x)
     FinalOrder.link.append(user_data["link"])
     FinalOrder.priceCNY.append(user_data["price"])
     FinalOrder.photo_id.append(user_data["photo_id"])
@@ -417,6 +413,13 @@ async def Summary(message: Message, state: FSMContext):
         for i in range(1, len(FinalOrder.photo_id)):
             media.append(InputMediaPhoto(type='photo', media=FinalOrder.photo_id[i]))
         msg = await message.answer_media_group(media)
+
+
+@router.message(Order.price)
+async def incorrect_input(message: Message):
+    await message.reply(
+        text="Требуется ввести цену(численное значение)"
+    )
 
 
 # Хэндлер без фильтра, отвечает в случае, если сообщение от пользователя не подошло
