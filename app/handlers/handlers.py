@@ -1,13 +1,14 @@
 import logging
 
-from aiogram import Router, F
+from aiogram import Router, F, types
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto  # , FSInputFile
+
+from app.keyboards import keyboards as kb
 from app.modules.convert import convert_price as cvrt
 from app.modules.convert import get_data
-from app.keyboards import keyboards as kb
 
 router = Router()
 
@@ -19,10 +20,31 @@ class Order(StatesGroup):
 
 
 class FinalOrder:
-    photo_id = []
-    link = []
-    priceCNY = []
-    priceBYN = []
+    def __init__(self):
+        self.photo_id = []
+        self.link = []
+        self.priceCNY = []
+        self.priceBYN = []
+
+    def clear(self):
+        self.photo_id.clear()
+        self.link.clear()
+        self.priceCNY.clear()
+        self.priceBYN.clear()
+
+    def remove_item(self, item_number):
+        # Удаление товара с выбранным номером из каждого списка
+        self.photo_id.pop(item_number)
+        self.link.pop(item_number)
+        self.priceCNY.pop(item_number)
+        self.priceBYN.pop(item_number)
+
+
+class RemId(StatesGroup):
+    item_id = State()
+
+
+user_orders = {}
 
 
 class OrderForm(StatesGroup):
@@ -44,6 +66,9 @@ async def cmd_start(message: Message):
 
 @router.message(F.text == 'Вернуться в меню ⬅️️️')
 async def cmd_start(message: Message):
+    order = user_orders.get(message.from_user.id, FinalOrder())
+    if order is not None:
+        order.clear()
     await message.answer(text=f"<b>🔎 Главное меню</b>", parse_mode=ParseMode.HTML,
                          reply_markup=kb.main)
 
@@ -128,8 +153,8 @@ async def instruction(message: Message):
         'помощью 👉 @stuffmarketmanager', reply_markup=kb.main)
 
 
-@router.message(F.text == '🔙Назад')
-@router.message(F.text.casefold() == "🔙Назад")
+@router.message(F.text == '🔙Назад в меню')
+@router.message(F.text.casefold() == "🔙Назад в меню")
 async def cancel_handler(message: Message, state: FSMContext) -> None:
     """
     Allow user to cancel any action
@@ -142,7 +167,7 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer(
         "Действие отменено.",
-        reply_markup=kb.shops,
+        reply_markup=kb.main,
     )
 
 
@@ -350,7 +375,7 @@ async def howto_install(message: Message):
 #                                      chat_id=5559094874)
 #
 # @router.callback_query(F.data == 'add_to_order')
-@router.message(F.text == 'order')
+@router.message(F.text == 'Оформить заказ 📝')
 async def CreateOrder(message: Message, state: FSMContext):
     await message.answer(
         text='Отправьте фотографию товара', reply_markup=kb.go_back
@@ -358,67 +383,182 @@ async def CreateOrder(message: Message, state: FSMContext):
     await state.set_state(Order.photo_id)
 
 
-@router.callback_query(F.data == 'add_to_order')
+@router.callback_query(F.data == 'Добавить товар')
 async def CreateOrder(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         text='Отправьте фотографию товара', reply_markup=kb.go_back
     )
+    await callback.answer()
     await state.set_state(Order.photo_id)
 
 
 @router.message(Order.photo_id, F.photo)
-async def Price(message: Message, state: FSMContext):
+async def Link(message: Message, state: FSMContext):
     await state.update_data(photo_id=message.photo[-1].file_id)
     await message.answer('Отправьте ссылку на товар')
     await state.set_state(Order.link)
 
 
 @router.message(Order.link)
-async def Photo(message: Message, state: FSMContext):
+async def Price(message: Message, state: FSMContext):
     await state.update_data(link=message.text)
     await message.answer('Пришлите цену товара в юанях')
     await state.set_state(Order.price)
 
 
 @router.message(Order.price, F.text.isdigit() == True)
-async def Summary(message: Message, state: FSMContext):
+async def Summary1(message: Message, state: FSMContext):
     await state.update_data(price=message.text)
     user_data = await state.get_data()
     x = float(user_data["price"])
     byn_rate = cvrt(x)
-    FinalOrder.link.append(user_data["link"])
-    FinalOrder.priceCNY.append(user_data["price"])
-    FinalOrder.photo_id.append(user_data["photo_id"])
-    FinalOrder.priceBYN.append(byn_rate)
+
+    # Получите экземпляр FinalOrder для этого пользователя или создайте новый
+    order = user_orders.get(message.from_user.id, FinalOrder())
+
+    order.link.append(user_data["link"])
+    order.priceCNY.append(user_data["price"])
+    order.photo_id.append(user_data["photo_id"])
+    order.priceBYN.append(byn_rate)
+
+    # Сохраните экземпляр обратно в словарь
+    user_orders[message.from_user.id] = order
     await state.clear()
-    if len(FinalOrder.photo_id) == 1:
+    await message.answer('Ваш заказ:', reply_markup=types.ReplyKeyboardRemove())
+    if len(order.photo_id) == 1:
         await message.answer_photo(
-            photo=FinalOrder.photo_id[0],
-            caption=f'🛒 Товаров: 1\n 1.{FinalOrder.link[0]} | '
-                    f'{FinalOrder.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма:'
-                    f'{FinalOrder.priceBYN[-1]:.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
-                    f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас', reply_markup=kb.FinalOrder
+            photo=order.photo_id[0],
+            caption=f'🛒 Товаров: 1\n 1. {order.link[0]} | '
+                    f'{order.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма: '
+                    f'{order.priceBYN[-1]:.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
+                    f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас'
         )
+        await message.answer('Действия:', reply_markup=kb.FinalOrder)
     else:
-        caption = f'🛒 Товаров: {len(FinalOrder.photo_id)}\n'
-        for i in range(len(FinalOrder.photo_id)):
-            caption += f'{i + 1}. {FinalOrder.link[i]} | {FinalOrder.priceBYN[i]:.2f} BYN\n'
-        caption += (f'\nИтоговая сумма: {sum(FinalOrder.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
+        caption = f'🛒 Товаров: {len(order.photo_id)}\n'
+        for i in range(len(order.photo_id)):
+            caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
+        caption += (f'\nИтоговая сумма: {sum(order.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
                     f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас')
         media = [
             InputMediaPhoto(type='photo',
-                            media=FinalOrder.photo_id[0],
+                            media=order.photo_id[0],
                             caption=caption)
         ]
-        for i in range(1, len(FinalOrder.photo_id)):
-            media.append(InputMediaPhoto(type='photo', media=FinalOrder.photo_id[i]))
-        msg = await message.answer_media_group(media)
+        for i in range(1, len(order.photo_id)):
+            media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
+        await message.answer_media_group(media)
+        await message.answer('Действия:', reply_markup=kb.FinalOrder)
+
+
+@router.callback_query(F.data == 'Удалить товар')
+async def remID(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await callback.message.answer('Укажите номер товара в списке, который нужно убрать')
+    await state.set_state(RemId.item_id)
+
+
+@router.message(RemId.item_id, F.text.isdigit() == True)
+async def rm_remID(message: Message, state: FSMContext):
+    await state.update_data(item_id=message.text)
+    user_data = await state.get_data()
+    x = int(user_data["item_id"]) - 1
+    order = user_orders.get(message.from_user.id, FinalOrder())
+    order.remove_item(x)
+    # # Получите экземпляр FinalOrder для этого пользователя или создайте новый
+    # order = user_orders.get(message.from_user.id, FinalOrder())
+    # # Сохраните экземпляр обратно в словарь
+    # user_orders[message.from_user.id] = order
+    if len(order.photo_id) == 1:
+        await message.answer('Ваш заказ:', reply_markup=types.ReplyKeyboardRemove())
+        if len(order.photo_id) == 1:
+            await message.answer_photo(
+                photo=order.photo_id[0],
+                caption=f'🛒 Товаров: 1\n 1. {order.link[0]} | '
+                        f'{order.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма: '
+                        f'{order.priceBYN[-1]:.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
+                        f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас'
+            )
+            await message.answer('Действия:', reply_markup=kb.FinalOrder)
+
+        else:
+            caption = f'🛒 Товаров: {len(order.photo_id)}\n'
+            for i in range(len(order.photo_id)):
+                caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
+            caption += (f'\nИтоговая сумма: {sum(order.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
+                        f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас')
+            media = [
+                InputMediaPhoto(type='photo',
+                                media=order.photo_id[0],
+                                caption=caption)
+            ]
+            for i in range(1, len(order.photo_id)):
+                media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
+            await message.answer_media_group(media)
+            await message.answer('Действия:', reply_markup=kb.FinalOrder)
+    else:
+        await message.answer('Ваш заказ пуст, создайте его снова.', reply_markup=kb.main)
+
+
+
+@router.callback_query(F.data == 'Менеджер, лови аптечку')
+async def order_to_manager(callback: CallbackQuery):
+    await callback.answer()
+    # Получите экземпляр FinalOrder для этого пользователя или создайте новый
+    order = user_orders.get(callback.from_user.id, FinalOrder())
+    if len(order.photo_id) != 0:
+        await callback.message.answer(text='Ваша заявка отправлена менеджеру.\nС Вами свяжутся в ближайшее время.')
+        if callback.from_user.id != 5559094874:
+            if len(order.photo_id) == 1:
+                await callback.bot.send_photo(
+                    photo=order.photo_id[0],
+                    caption=f'🛒 Товаров: 1\n 1. {order.link[0]} | '
+                            f'{order.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма: '
+                            f'{order.priceBYN[-1]:.2f} BYN\n\nЗаказ от: '
+                            f'@{callback.from_user.username}', chat_id=6092344340
+                )
+            else:
+                caption = f'🛒 Товаров: {len(order.photo_id)}\n'
+                for i in range(len(order.photo_id)):
+                    caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
+                caption += (f'\nИтоговая сумма: {sum(order.priceBYN):.2f} BYN\n\nЗаказ от: '
+                            f'@{callback.from_user.username}')
+                media = [
+                    InputMediaPhoto(type='photo',
+                                    media=order.photo_id[0],
+                                    caption=caption)
+                ]
+                for i in range(1, len(order.photo_id)):
+                    media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
+                await callback.bot.send_media_group(media=media, chat_id=6092344340)
+        order = user_orders.get(callback.from_user.id, FinalOrder())
+        order.clear()
+        if callback.from_user.username is None:
+            await callback.message.answer(
+                'У вас нет userID, перешлите сообщение с заказом менеджеру 👉@stuffmarketmanager')
+    else:
+        await callback.message.answer('Ваш заказ пуст, создайте его снова.', reply_markup=kb.main)
+
+
+@router.callback_query(F.data == 'Галя, неси ключ, у нас отмена')
+async def order_to_manager(callback: CallbackQuery):
+    await callback.answer()
+    order = user_orders.get(callback.from_user.id, FinalOrder())
+    order.clear()
+    await callback.message.answer('Ваш заказ отменён.\n\nВозвращаю Вас в главное меню.',reply_markup=kb.main)
 
 
 @router.message(Order.price)
 async def incorrect_input(message: Message):
     await message.reply(
         text="Требуется ввести цену(численное значение)"
+    )
+
+
+@router.message(Order.photo_id)
+async def incorrect_input(message: Message):
+    await message.reply(
+        text="Требуется прислать фото"
     )
 
 
