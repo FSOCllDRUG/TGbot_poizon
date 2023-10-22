@@ -1,6 +1,6 @@
 import logging
 
-from aiogram import Router, F, types
+from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -153,8 +153,8 @@ async def instruction(message: Message):
         'помощью 👉 @stuffmarketmanager', reply_markup=kb.main)
 
 
-@router.message(F.text == '🔙Назад в меню')
-@router.message(F.text.casefold() == "🔙Назад в меню")
+@router.message(F.text == '🔙 Назад в меню')
+@router.message(F.text.casefold() == "🔙 Назад в меню")
 async def cancel_handler(message: Message, state: FSMContext) -> None:
     """
     Allow user to cancel any action
@@ -166,7 +166,7 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
     logging.info("Cancelling state %r", current_state)
     await state.clear()
     await message.answer(
-        "Действие отменено.",
+        "Действие отменено",
         reply_markup=kb.main,
     )
 
@@ -180,15 +180,19 @@ async def converting(message: Message, state: FSMContext) -> None:
     avia_price = data['avia']
     avto_price = data['avto']
     await message.answer(
-        f"Цена товара= {byn_rate:.2f} BYN\nЦена авто-доставки за 1 кг= {avto_price:.0f} $\nЦена "
-        f"авиа-доставки за 1 кг= {avia_price:.0f} $", reply_markup=kb.inshop)
+        f"<b>Итоговая стоимость</b>: {byn_rate:.2f} BYN + доставка из Китая (оплачивается по прибытии товара в "
+        f"Беларусь, по тарифу {avia_price:.0f}$/кг) + услуги почты",
+        parse_mode='HTML',
+        reply_markup=kb.inshop)
     await state.clear()
 
+
+# {avto_price:.0f}  {avia_price:.0f} $
 
 @router.message(Converting.yuan_amount)
 async def incorrect_input_rasschet(message: Message) -> None:
     await message.reply(
-        text="Требуется ввести цену(численное значение)"
+        text="Требуется ввести цену (численное значение)"
     )
 
 
@@ -217,7 +221,7 @@ async def cmd_get_video_id(message: Message):
 # Poizon
 @router.message(F.text == 'Poizon')
 async def MGPoizon(message: Message, state: FSMContext):
-    await message.answer(text='Введите стоимость товара в юанях(¥)\n'
+    await message.answer(text='Введите стоимость товара в юанях (¥)\n'
                               '<i>❗️В случае, если вы хотите заказать несколько штук одной модели, вводите суммарное '
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
@@ -238,7 +242,7 @@ async def MGPoizon(message: Message, state: FSMContext):
 # Taobao
 @router.message(F.text == 'Taobao')
 async def MGTaobao(message: Message, state: FSMContext):
-    await message.answer(text='Введите стоимость товара в юанях(¥)\n'
+    await message.answer(text='Введите стоимость товара в юанях (¥)\n'
                               '<i>❗️В случае, если вы хотите заказать несколько штук одной модели, вводите суммарное '
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
@@ -259,7 +263,7 @@ async def MGTaobao(message: Message, state: FSMContext):
 # 1688
 @router.message(F.text == '1688')
 async def MG1688(message: Message, state: FSMContext):
-    await message.answer(text='Введите стоимость товара в юанях(¥)\n'
+    await message.answer(text='Введите стоимость товара в юанях (¥)\n'
                               '<i>❗️В случае, если вы хотите заказать несколько штук одной модели, вводите суммарное '
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
@@ -268,7 +272,7 @@ async def MG1688(message: Message, state: FSMContext):
                         caption='1. Выберите нужный товар на <b>1688</b> и нажмите на правую нижнюю кнопку (обращайте '
                                 'внимание на цену за определённое количество)\n'
                                 '2. Выберите нужный цвет/размер и напишите цену (или общую сумму за нужное вам '
-                                'количество), которая показана снизу'),
+                                'количество), которая показана снизу', parse_mode="HTML"),
         InputMediaPhoto(type='photo',
                         media='AgACAgIAAxkBAAICT2Ur1kZAw_RmEu8GLQAB9nOsGJqPhAACXM8xGwtFYEk_IATFQY1w7wEAAwIAA3kAAzAE')
 
@@ -280,7 +284,7 @@ async def MG1688(message: Message, state: FSMContext):
 # Pinduoduo
 @router.message(F.text == 'Pinduoduo')
 async def MGPinduoduo(message: Message, state: FSMContext):
-    await message.answer(text='Введите стоимость товара в юанях(¥)\n'
+    await message.answer(text='Введите стоимость товара в юанях (¥)\n'
                               '<i>❗️В случае, если вы хотите заказать несколько штук одной модели, вводите суммарное '
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
@@ -289,7 +293,7 @@ async def MGPinduoduo(message: Message, state: FSMContext):
                         caption=' 1. Выберите нужный товар на <b>Pinduoduo</b>. В карточке товара снизу 2 кнопки (🔵 - '
                                 'одиночная покупка, 🟢 - парная покупка)\n'
                                 '2. Выберите нужный цвет/размер и напишите цену (или общую сумму за нужное вам '
-                                'количество), которая показана сверху'),
+                                'количество), которая показана сверху', parse_mode="HTML"),
         InputMediaPhoto(type='photo',
                         media='AgACAgIAAxkBAAICV2Ur1nJVLYKDu0sv5ZPZo5MhZrwfAAJozDEbTVxhSUyDMx4dbjUuAQADAgADdwADMAQ')
 
@@ -301,14 +305,15 @@ async def MGPinduoduo(message: Message, state: FSMContext):
 # 95
 @router.message(F.text == '95')
 async def MG95(message: Message, state: FSMContext):
-    await message.answer(text='Введите стоимость товара в юанях(¥)\n'
+    await message.answer(text='Введите стоимость товара в юанях (¥)\n'
                               '<i>❗️В случае, если вы хотите заказать несколько штук одной модели, вводите суммарное '
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
         InputMediaPhoto(type='photo',
                         media='AgACAgIAAxkBAAICWmUr1sgd6MNEeCz1Wi2cWfX7tMAtAAK20DEbC0VgSTxc7Fvw8TqdAQADAgADdwADMAQ',
                         caption='1. Выберите понравившийся товар на <b>95</b> и нажмите на обведённую кнопку\n'
-                                '2. Выберите нужный размер и напишите цену, которая показана на зелёной кнопке снизу'),
+                                '2. Выберите нужный размер и напишите цену, которая показана на зелёной кнопке снизу',
+                        parse_mode="HTML"),
         InputMediaPhoto(type='photo',
                         media='AgACAgIAAxkBAAICWWUr1sc7bmf5x41W7kduoO-a3z7-AAK10DEbC0VgSUJYref0ncrtAQADAgADdwADMAQ')
 
@@ -331,64 +336,21 @@ async def howto_install(message: Message):
         'менеджеру за помощью\n👉 @stuffmarketmanager')
 
 
-#
-# # Отправка заявки на оформление заказа
-# @router.message(F.text == 'Оформить заказ 📝')
-# @router.message(F.text == 'Оформить ещё один товар')
-# async def CreateOrder(message: Message, state: FSMContext):
-#     await message.answer(
-#         text='Отправьте скриншот выбранного товара', reply_markup=kb.go_back
-#     )
-#     await state.set_state(OrderForm.photo_id)
-#
-#
-# @router.message(OrderForm.photo_id, F.photo)
-# async def Price(message: Message, state: FSMContext):
-#     await state.update_data(photo_id=message.photo[-1].file_id)
-#     await message.answer('Пришлите ссылку на выбранный товар')
-#     await state.set_state(OrderForm.link)
-#
-#
-# @router.message(OrderForm.link)
-# async def Photo(message: Message, state: FSMContext):
-#     await state.update_data(link=message.text)
-#     await message.answer('Пришлите цену товара в юанях')
-#     await state.set_state(OrderForm.price)
-#
-#
-# @router.message(OrderForm.price)
-# async def Summary(message: Message, state: FSMContext):
-#     await state.update_data(price=message.text)
-#     user_data = await state.get_data()
-#     x = float(user_data["price"])
-#     byn_rate = await cvrt(x / 10 * 1.05, 'CNY')
-#     await message.answer_photo(str(user_data["photo_id"]),
-#                                caption=f'Ссылка на товар: \n {user_data["link"]} \nЦена товара:\n'
-#                                        f' {user_data["price"]}¥= {byn_rate:.2f}BYN', reply_markup=kb.order)
-#     await message.answer('Ваша заявка отправлена менеджеру 👉 @stuffmarketmanager')
-#     if message.from_user.id != 5559094874:
-#         await message.bot.send_photo(photo=str(user_data["photo_id"]),
-#                                      caption=f'Ссылка на товар: {user_data["link"]} \nЦена товара:'
-#                                              f' {user_data["price"]}¥ = '
-#                                              f'{byn_rate:.2f}BYN\nЗаказ от: '
-#                                              f'@{message.from_user.username}',
-#                                      chat_id=5559094874)
-#
-# @router.callback_query(F.data == 'add_to_order')
 @router.message(F.text == 'Оформить заказ 📝')
 async def CreateOrder(message: Message, state: FSMContext):
+    order = user_orders.get(message.from_user.id, FinalOrder())
+    order.clear()
     await message.answer(
         text='Отправьте фотографию товара', reply_markup=kb.go_back
     )
     await state.set_state(Order.photo_id)
 
 
-@router.callback_query(F.data == 'Добавить товар')
-async def CreateOrder(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(
+@router.message(F.text == 'Добавить товар')
+async def CreateOrder(message: Message, state: FSMContext):
+    await message.answer(
         text='Отправьте фотографию товара', reply_markup=kb.go_back
     )
-    await callback.answer()
     await state.set_state(Order.photo_id)
 
 
@@ -424,37 +386,35 @@ async def Summary1(message: Message, state: FSMContext):
     # Сохраните экземпляр обратно в словарь
     user_orders[message.from_user.id] = order
     await state.clear()
-    await message.answer('Ваш заказ:', reply_markup=types.ReplyKeyboardRemove())
+    await message.answer('Ваш заказ:', reply_markup=kb.FinalOrderR)
     if len(order.photo_id) == 1:
         await message.answer_photo(
             photo=order.photo_id[0],
-            caption=f'🛒 Товаров: 1\n 1. {order.link[0]} | '
-                    f'{order.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма: '
+            caption=f'🛒 <b>Товаров</b>: 1\n 1. {order.link[0]} | '
+                    f'{order.priceBYN[-1]:.2f} BYN\n\n<b>Итоговая сумма</b>: '
                     f'{order.priceBYN[-1]:.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
-                    f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас'
+                    f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас', parse_mode='HTML',
+            reply_markup=kb.FinalOrderR
         )
-        await message.answer('Действия:', reply_markup=kb.FinalOrder)
     else:
-        caption = f'🛒 Товаров: {len(order.photo_id)}\n'
+        caption = f'🛒 <b>Товаров</b>: {len(order.photo_id)}\n'
         for i in range(len(order.photo_id)):
             caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
-        caption += (f'\nИтоговая сумма: {sum(order.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
+        caption += (f'\n<b>Итоговая сумма</b>: {sum(order.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
                     f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас')
         media = [
             InputMediaPhoto(type='photo',
                             media=order.photo_id[0],
-                            caption=caption)
+                            caption=f'{caption}', parse_mode='HTML', )
         ]
         for i in range(1, len(order.photo_id)):
             media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
         await message.answer_media_group(media)
-        await message.answer('Действия:', reply_markup=kb.FinalOrder)
 
 
-@router.callback_query(F.data == 'Удалить товар')
-async def remID(callback: CallbackQuery, state: FSMContext):
-    await callback.answer()
-    await callback.message.answer('Укажите номер товара в списке, который нужно убрать')
+@router.message(F.text == 'Удалить товар')
+async def remID(message: Message, state: FSMContext):
+    await message.answer('Укажите номер товара в списке, который нужно убрать')
     await state.set_state(RemId.item_id)
 
 
@@ -465,87 +425,79 @@ async def rm_remID(message: Message, state: FSMContext):
     x = int(user_data["item_id"]) - 1
     order = user_orders.get(message.from_user.id, FinalOrder())
     order.remove_item(x)
-    # # Получите экземпляр FinalOrder для этого пользователя или создайте новый
-    # order = user_orders.get(message.from_user.id, FinalOrder())
-    # # Сохраните экземпляр обратно в словарь
-    # user_orders[message.from_user.id] = order
-    if len(order.photo_id) == 1:
-        await message.answer('Ваш заказ:', reply_markup=types.ReplyKeyboardRemove())
+    if len(order.photo_id) >= 1:
+        await message.answer('Ваш заказ:', reply_markup=kb.FinalOrderR)
         if len(order.photo_id) == 1:
             await message.answer_photo(
                 photo=order.photo_id[0],
                 caption=f'🛒 Товаров: 1\n 1. {order.link[0]} | '
                         f'{order.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма: '
                         f'{order.priceBYN[-1]:.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
-                        f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас'
+                        f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас', reply_markup=kb.FinalOrderR
             )
-            await message.answer('Действия:', reply_markup=kb.FinalOrder)
 
         else:
             caption = f'🛒 Товаров: {len(order.photo_id)}\n'
             for i in range(len(order.photo_id)):
                 caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
-            caption += (f'\nИтоговая сумма: {sum(order.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь вы '
-                        f'оплачиваете за доставку Китай-Беларусь + за услуги почты до вас')
+            caption += (f'\n<b>Итоговая сумма</b>: {sum(order.priceBYN):.2f} BYN\n\n 🚛 По прибытии товара в Беларусь '
+                        f'Вы оплачиваете за доставку Китай-Беларусь + за услуги почты до вас')
             media = [
                 InputMediaPhoto(type='photo',
                                 media=order.photo_id[0],
-                                caption=caption)
+                                caption=f'{caption}', parse_mode='HTML', reply_markup=kb.FinalOrderR)
             ]
             for i in range(1, len(order.photo_id)):
                 media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
             await message.answer_media_group(media)
-            await message.answer('Действия:', reply_markup=kb.FinalOrder)
+            # await message.answer('Действия:', reply_markup=kb.FinalOrder)
+    else:
+        await message.answer('Ваш заказ пуст, создайте его снова', reply_markup=kb.main)
+
+
+@router.message(F.text == 'Отправить заявку менеджеру')
+async def order_to_manager(message: Message):
+    order = user_orders.get(message.from_user.id, FinalOrder())
+    if len(order.photo_id) != 0:
+        await message.answer(
+            text='Ваш заказ отправлен нашему менеджеру. Для ускорения процесса можете самостоятельно переслать сообщение со списком товаров \n👉 @stuffmarketby')
+        if message.from_user.id != 5559094874:
+            if len(order.photo_id) == 1:
+                await message.bot.send_photo(
+                    photo=order.photo_id[0],
+                    caption=f'🛒 <b>Товаров</b>: 1\n 1. {order.link[0]} | '
+                            f'{order.priceBYN[-1]:.2f} BYN\n\n<b>Итоговая сумма</b>: '
+                            f'{order.priceBYN[-1]:.2f} BYN\n\nЗаказ от: '
+                            f'@{message.from_user.username}', parse_mode='HTML', chat_id=5559094874
+                )
+            else:
+                caption = f'🛒 <b>Товаров</b>: {len(order.photo_id)}\n'
+                for i in range(len(order.photo_id)):
+                    caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
+                caption += (f'\n<b>Итоговая сумма</b>: {sum(order.priceBYN):.2f} BYN\n\nЗаказ от: '
+                            f'@{message.from_user.username}')
+                media = [
+                    InputMediaPhoto(type='photo',
+                                    media=order.photo_id[0],
+                                    caption=f'{caption}', parse_mode='HTML')
+                ]
+                for i in range(1, len(order.photo_id)):
+                    media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
+                await message.bot.send_media_group(media=media, chat_id=5559094874)
+        order = user_orders.get(message.from_user.id, FinalOrder())
+        order.clear()
+        if message.from_user.username is None:
+            await message.answer(
+                'У вас нет userID, перешлите сообщение с заказом менеджеру\n👉@stuffmarketmanager')
     else:
         await message.answer('Ваш заказ пуст, создайте его снова.', reply_markup=kb.main)
 
 
-
-@router.callback_query(F.data == 'Менеджер, лови аптечку')
-async def order_to_manager(callback: CallbackQuery):
-    await callback.answer()
-    # Получите экземпляр FinalOrder для этого пользователя или создайте новый
-    order = user_orders.get(callback.from_user.id, FinalOrder())
-    if len(order.photo_id) != 0:
-        await callback.message.answer(text='Ваша заявка отправлена менеджеру.\nС Вами свяжутся в ближайшее время.')
-        if callback.from_user.id != 5559094874:
-            if len(order.photo_id) == 1:
-                await callback.bot.send_photo(
-                    photo=order.photo_id[0],
-                    caption=f'🛒 Товаров: 1\n 1. {order.link[0]} | '
-                            f'{order.priceBYN[-1]:.2f} BYN\n\nИтоговая сумма: '
-                            f'{order.priceBYN[-1]:.2f} BYN\n\nЗаказ от: '
-                            f'@{callback.from_user.username}', chat_id=6092344340
-                )
-            else:
-                caption = f'🛒 Товаров: {len(order.photo_id)}\n'
-                for i in range(len(order.photo_id)):
-                    caption += f'{i + 1}. {order.link[i]} | {order.priceBYN[i]:.2f} BYN\n'
-                caption += (f'\nИтоговая сумма: {sum(order.priceBYN):.2f} BYN\n\nЗаказ от: '
-                            f'@{callback.from_user.username}')
-                media = [
-                    InputMediaPhoto(type='photo',
-                                    media=order.photo_id[0],
-                                    caption=caption)
-                ]
-                for i in range(1, len(order.photo_id)):
-                    media.append(InputMediaPhoto(type='photo', media=order.photo_id[i]))
-                await callback.bot.send_media_group(media=media, chat_id=6092344340)
-        order = user_orders.get(callback.from_user.id, FinalOrder())
-        order.clear()
-        if callback.from_user.username is None:
-            await callback.message.answer(
-                'У вас нет userID, перешлите сообщение с заказом менеджеру 👉@stuffmarketmanager')
-    else:
-        await callback.message.answer('Ваш заказ пуст, создайте его снова.', reply_markup=kb.main)
-
-
-@router.callback_query(F.data == 'Галя, неси ключ, у нас отмена')
-async def order_to_manager(callback: CallbackQuery):
-    await callback.answer()
-    order = user_orders.get(callback.from_user.id, FinalOrder())
+@router.message(F.text == 'Отменить заказ')
+async def order_to_manager(message: Message):
+    order = user_orders.get(message.from_user.id, FinalOrder())
     order.clear()
-    await callback.message.answer('Ваш заказ отменён.\n\nВозвращаю Вас в главное меню.',reply_markup=kb.main)
+    await message.answer('Ваш заказ отменён.\n\nВозвращаю Вас в главное меню.', reply_markup=kb.main)
 
 
 @router.message(Order.price)
@@ -566,4 +518,4 @@ async def incorrect_input(message: Message):
 # ни под один фильтр
 @router.message()
 async def echo(message: Message):
-    await message.answer('Я тебя не понимаю\nВозвращаю тебя в главное меню.', reply_markup=kb.main)
+    await message.answer('Я тебя не понимаю\nВозвращаю тебя в главное меню', reply_markup=kb.main)

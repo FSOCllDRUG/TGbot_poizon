@@ -18,28 +18,23 @@ main = ReplyKeyboardMarkup(keyboard=main_kb,
                            resize_keyboard=True,
                            input_field_placeholder='Выберите пункт ниже', )
 
-go_back_kb = [[KeyboardButton(text='🔙Назад в меню')]]
+go_back_kb = [[KeyboardButton(text='🔙 Назад в меню')]]
 go_back = ReplyKeyboardMarkup(keyboard=go_back_kb, resize_keyboard=True)
-
-# socials = InlineKeyboardMarkup(inline_keyboard=[
-#     [InlineKeyboardButton(text='Telegram', url='https://t.me/xtc_hydra')]])
 
 otzivi = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='В Telegram', url='https://t.me/stufffeedback')],
     [InlineKeyboardButton(text='В VK', url='https://vk.com/romatruhov?w=wall330750798_272')]
 ])
 
-# orders = InlineKeyboardMarkup(inline_keyboard=[
-#     [InlineKeyboardButton(text='Отправить заявку менеджеру', callback_data='send_order')]
-#     [InlineKeyboardButton(text='Создать ещё одну заявку', callback_data='send_create')]
-#     [InlineKeyboardButton(text='Выйти в меню', callback_data='cancel')]
-# ])
-FinalOrder = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Добавить товар', callback_data='Добавить товар')],
-    [InlineKeyboardButton(text='Удалить товар', callback_data='Удалить товар')],
-    [InlineKeyboardButton(text='Отправить заявку менеджеру', callback_data='Менеджер, лови аптечку')],
-    [InlineKeyboardButton(text='Отменить заказ', callback_data='Галя, неси ключ, у нас отмена')]
-])
+FinalOrderR_KB = [
+    [KeyboardButton(text='Добавить товар', callback_data='Добавить товар')],
+    [KeyboardButton(text='Удалить товар', callback_data='Удалить товар')],
+    [KeyboardButton(text='Отправить заявку менеджеру', callback_data='Менеджер, лови аптечку')],
+    [KeyboardButton(text='Отменить заказ', callback_data='Галя, неси ключ, у нас отмена')]
+]
+FinalOrderR = ReplyKeyboardMarkup(keyboard=FinalOrderR_KB, one_time_keyboard=True,
+                                  input_field_placeholder='Выберите вариант в меню ниже⬇️', resize_keyboard=True)
+
 socials = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='VK', url='https://vk.com/romatruhov')],
     [InlineKeyboardButton(text='Instagram', url='https://www.instagram.com/stuffmarketby')],
@@ -56,7 +51,7 @@ shops_kb = [[KeyboardButton(text='Poizon'), KeyboardButton(text='Taobao'), Keybo
 shops = ReplyKeyboardMarkup(keyboard=shops_kb, one_time_keyboard=True,
                             input_field_placeholder='Выберите вариант в меню ниже⬇️', resize_keyboard=True)
 
-inshop_back_kb = [[KeyboardButton(text='🔙Назад')]]
+inshop_back_kb = [[KeyboardButton(text='🔙 Назад в меню')]]
 inshop_back = ReplyKeyboardMarkup(keyboard=inshop_back_kb, one_time_keyboard=True,
                                   input_field_placeholder='Сумма в юанях ¥', resize_keyboard=True)
 
@@ -67,7 +62,7 @@ inshop = ReplyKeyboardMarkup(keyboard=inshop_kb, one_time_keyboard=False, resize
 
 order_kb = [
     [KeyboardButton(text='Оформить ещё один товар')],
-    [KeyboardButton(text='🔙Назад в меню')]
+    [KeyboardButton(text='🔙 Назад в меню')]
 ]
 order = ReplyKeyboardMarkup(keyboard=order_kb, one_time_keyboard=False, resize_keyboard=True)
 
