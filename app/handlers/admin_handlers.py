@@ -27,6 +27,8 @@ async def help_admin(message: Message):
                         'Чтобы <b>установить</b> значение:\n'
                         '   Курс CNY->BYN: '
                         '<code>/set rate {значение}</code>\n'
+                        '   Процент(%) выкупа: '
+                        '<code>/set vikup {значение}</code>\n'
                         '   Стоимость авто-доставки: '
                         '<code>/set avto {значение} </code>\n'
                         '   Стоимость авиа-доставки: '

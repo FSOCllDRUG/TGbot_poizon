@@ -12,8 +12,9 @@ from app.modules.convert import get_data
 
 router = Router()
 
-#@router.message(F.photo)
-#async def cmd_get_photo_id(message: Message):
+
+# @router.message(F.photo)
+# async def cmd_get_photo_id(message: Message):
 #    await #message.answer_photo(photo=message.photo[-1].file_id,caption=message.photo[-1].file_id)
 
 class Order(StatesGroup):
@@ -119,8 +120,10 @@ async def faq_who(message: Message):
 
 @router.message(F.text == 'Как происходит расчёт?')
 async def faq_price_calc(message: Message):
-    await message.answer('Актуальный курс: 1¥ = 0.53BYN\nТ.е. стоимость в ¥ • 0.53BYN = стоимость вашей '
-                         'позиции в BYN\n\n+ 5% комиссия выкупа (оплата товара, связь с продавцом и доставка по '
+    data = get_data()
+    vikup = data["vikup"]
+    await message.answer(f'Актуальный курс: 1¥ = 0.53BYN\nТ.е. стоимость в ¥ • 0.53BYN = стоимость вашей '
+                         f'позиции в BYN\n\n+ {vikup:.0f}% комиссия выкупа (оплата товара, связь с продавцом и доставка по '
                          'Китаю)')
 
 
@@ -463,7 +466,8 @@ async def order_to_manager(message: Message):
     order = user_orders.get(message.from_user.id, FinalOrder())
     if len(order.photo_id) != 0:
         await message.answer(
-            text='Ваш заказ отправлен нашему менеджеру. Для ускорения процесса можете самостоятельно переслать сообщение со списком товаров \n👉 @stuffmarketby', reply_markup=kb.main)
+            text='Ваш заказ отправлен нашему менеджеру. Для ускорения процесса можете самостоятельно переслать сообщение со списком товаров \n👉 @stuffmarketby',
+            reply_markup=kb.main)
         if message.from_user.id != 5559094874:
             if len(order.photo_id) == 1:
                 await message.bot.send_photo(
