@@ -500,11 +500,19 @@ async def order_to_manager(message: Message):
     await message.answer('Ваш заказ отменён.\n\nВозвращаю Вас в главное меню.', reply_markup=kb.main)
 
 
-@router.message(Order.price)
-async def incorrect_input(message: Message):
-    await message.reply(
-        text="Требуется ввести цену(численное значение)"
-    )
+@router.message(F.text == 'тест')
+async def test(message: Message):
+    a=9*0
+    b=0/5
+    result = 1 / 0
+
+    await message.answer(text=f'{int(a)},{int(b)},{result}')
+
+    @router.message(Order.price)
+    async def incorrect_input(message: Message):
+        await message.reply(
+            text="Требуется ввести цену(численное значение)"
+        )
 
 
 @router.message(Order.photo_id)
