@@ -12,6 +12,9 @@ from app.modules.convert import get_data
 
 router = Router()
 
+#@router.message(F.photo)
+#async def cmd_get_photo_id(message: Message):
+#    await #message.answer_photo(photo=message.photo[-1].file_id,caption=message.photo[-1].file_id)
 
 class Order(StatesGroup):
     photo_id = State()
@@ -226,12 +229,12 @@ async def MGPoizon(message: Message, state: FSMContext):
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICRWUr1hgkiFedWNhRvy1_XOqOlio2AAJRzzEbC0VgSV39HkLjH8KAAQADAgADeQADMAQ',
+                        media='AgACAgIAAxkBAAO_ZTrsGTTlZcev3YnTAAGdmbFj_wgkAAJRzzEbC0VgSZzzMLLqme5DAQADAgADeQADMAQ',
                         caption='1. Выберите нужный товар на <b>Poizon</b> и нажмите на правую нижнюю кнопку\n'
                                 '2. Выберите нужный размер и напишите цену, которая показана первой',
                         parse_mode=ParseMode.HTML),
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICR2Ur1h-7-Zv7kwsIyuGh7qa69GBVAAJSzzEbC0VgSRmaM9d8YOtYAQADAgADeQADMAQ')
+                        media='AgACAgIAAxkBAAPAZTrsGTx3CWyn0tkgb25UGE5MCloAAlLPMRsLRWBJKuZjMGZeFOgBAAMCAAN5AAMwBA')
 
     ]
     await message.answer_media_group(media=media)
@@ -247,13 +250,13 @@ async def MGTaobao(message: Message, state: FSMContext):
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICSWUr1ik8MDLMv-sp4GqxTA6uYz0lAAJYzzEbC0VgST83L4RIXXNGAQADAgADeQADMAQ',
+                        media='AgACAgIAAxkBAAPDZTrsLZkSGt_wV3Blv-g-rOXKBaUAAljPMRsLRWBJhg8YgZVTgkABAAMCAAN5AAMwBA',
                         caption='1. Выберите нужный товар на <b>Taobao</b> и нажмите на правую нижнюю кнопку\n'
                                 '2. Выберите нужный цвет/размер и напишите цену (или общую сумму за нужное вам '
                                 'количество), которая показана сверху',
                         parse_mode=ParseMode.HTML),
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICS2Ur1jfq17flEjLqRlC7fe_-zYxQAAJZzzEbC0VgSR1_rmZUM5QjAQADAgADeQADMAQ')
+                        media='AgACAgIAAxkBAAPEZTrsLYwS063jPHZtMFhjDj5XjJcAAlnPMRsLRWBJY8ovzOvLNugBAAMCAAN5AAMwBA')
 
     ]
     await message.answer_media_group(media=media)
@@ -268,13 +271,13 @@ async def MG1688(message: Message, state: FSMContext):
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICTWUr1kHh6NovpXnH0bXhAxRt100PAAJbzzEbC0VgSZP4DgOTl1gmAQADAgADeQADMAQ',
+                        media='AgACAgIAAxkBAAPHZTrsR8B_s-LGpX8M1GsZjSGnNIAAAlvPMRsLRWBJMQgiIxOpaBIBAAMCAAN5AAMwBA',
                         caption='1. Выберите нужный товар на <b>1688</b> и нажмите на правую нижнюю кнопку (обращайте '
                                 'внимание на цену за определённое количество)\n'
                                 '2. Выберите нужный цвет/размер и напишите цену (или общую сумму за нужное вам '
                                 'количество), которая показана снизу', parse_mode="HTML"),
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICT2Ur1kZAw_RmEu8GLQAB9nOsGJqPhAACXM8xGwtFYEk_IATFQY1w7wEAAwIAA3kAAzAE')
+                        media='AgACAgIAAxkBAAPIZTrsR6vgeNBL9ZIe5aRPTK7DbxUAAlzPMRsLRWBJM-L2ehseVyMBAAMCAAN5AAMwBA')
 
     ]
     await message.answer_media_group(media=media)
@@ -289,13 +292,13 @@ async def MGPinduoduo(message: Message, state: FSMContext):
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICVWUr1nKAI8FKSCStIsAQMgOJe9MiAAJnzDEbTVxhSXm_4FIqXoIRAQADAgADdwADMAQ',
+                        media='AgACAgIAAxkBAAPLZTrsVeDRVfXPJoGFVjtf3lRxEasAAmfMMRtNXGFJqxnNv7FEWtIBAAMCAAN3AAMwBA',
                         caption=' 1. Выберите нужный товар на <b>Pinduoduo</b>. В карточке товара снизу 2 кнопки (🔵 - '
                                 'одиночная покупка, 🟢 - парная покупка)\n'
                                 '2. Выберите нужный цвет/размер и напишите цену (или общую сумму за нужное вам '
                                 'количество), которая показана сверху', parse_mode="HTML"),
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICV2Ur1nJVLYKDu0sv5ZPZo5MhZrwfAAJozDEbTVxhSUyDMx4dbjUuAQADAgADdwADMAQ')
+                        media='AgACAgIAAxkBAAPMZTrsVb1fc7FtXlky6l7Rq0UgTFMAAmjMMRtNXGFJ5NnU5IbVpKQBAAMCAAN3AAMwBA')
 
     ]
     await message.answer_media_group(media=media)
@@ -310,12 +313,12 @@ async def MG95(message: Message, state: FSMContext):
                               'число</i>', parse_mode="HTML", reply_markup=kb.inshop_back)
     media = [
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICWmUr1sgd6MNEeCz1Wi2cWfX7tMAtAAK20DEbC0VgSTxc7Fvw8TqdAQADAgADdwADMAQ',
+                        media='AgACAgIAAxkBAAPPZTrsZuC7hxppPEQgxVd0bxLyEMkAArbQMRsLRWBJb2TcdQxCFb4BAAMCAAN3AAMwBA',
                         caption='1. Выберите понравившийся товар на <b>95</b> и нажмите на обведённую кнопку\n'
                                 '2. Выберите нужный размер и напишите цену, которая показана на зелёной кнопке снизу',
                         parse_mode="HTML"),
         InputMediaPhoto(type='photo',
-                        media='AgACAgIAAxkBAAICWWUr1sc7bmf5x41W7kduoO-a3z7-AAK10DEbC0VgSUJYref0ncrtAQADAgADdwADMAQ')
+                        media='AgACAgIAAxkBAAPQZTrsZirUbQr1CO0sxS_P3sCko6kAArXQMRsLRWBJuMDqLBrzbUUBAAMCAAN3AAMwBA')
 
     ]
     await message.answer_media_group(media=media)
@@ -460,7 +463,7 @@ async def order_to_manager(message: Message):
     order = user_orders.get(message.from_user.id, FinalOrder())
     if len(order.photo_id) != 0:
         await message.answer(
-            text='Ваш заказ отправлен нашему менеджеру. Для ускорения процесса можете самостоятельно переслать сообщение со списком товаров \n👉 @stuffmarketby')
+            text='Ваш заказ отправлен нашему менеджеру. Для ускорения процесса можете самостоятельно переслать сообщение со списком товаров \n👉 @stuffmarketby', reply_markup=kb.main)
         if message.from_user.id != 5559094874:
             if len(order.photo_id) == 1:
                 await message.bot.send_photo(
@@ -500,19 +503,11 @@ async def order_to_manager(message: Message):
     await message.answer('Ваш заказ отменён.\n\nВозвращаю Вас в главное меню.', reply_markup=kb.main)
 
 
-@router.message(F.text == 'тест')
-async def test(message: Message):
-    a=9*0
-    b=0/5
-    result = 1 / 0
-
-    await message.answer(text=f'{int(a)},{int(b)},{result}')
-
-    @router.message(Order.price)
-    async def incorrect_input(message: Message):
-        await message.reply(
-            text="Требуется ввести цену(численное значение)"
-        )
+@router.message(Order.price)
+async def incorrect_input(message: Message):
+    await message.reply(
+        text="Требуется ввести цену(численное значение)"
+    )
 
 
 @router.message(Order.photo_id)
